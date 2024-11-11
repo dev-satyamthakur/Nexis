@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { carouselItems } from '../../mocks/carouselData';
+import { Link } from 'react-router-dom';
 
 const HeroCarousel: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -40,11 +41,12 @@ const HeroCarousel: React.FC = () => {
         {/* Carousel wrapper */}
         <div className="relative mt-4 h-56 overflow-hidden rounded-xl md:h-[50vh]">
           {carouselItems.map((item, index) => (
-            <div
+            <Link
               key={item.id}
               className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
                 currentSlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
               }`}
+              to={'/article/1'}
             >
               <img
                 src={item.imageSrc}
@@ -60,7 +62,7 @@ const HeroCarousel: React.FC = () => {
                   {item.publishedDate} &bull; {item.readTime}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

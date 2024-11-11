@@ -46,7 +46,11 @@ const ArticleNavigation: React.FC<ArticleNavigationProps> = ({ sections }) => {
       <h2 className="text-lg font-semibold">In this article</h2>
       <ul className="mt-2 space-y-1">
         {sections.map((section) => (
-          <li key={section.id} className="flex items-center">
+          <button
+            key={section.id}
+            className="flex items-center"
+            onClick={() => scrollToSection(section.id)}
+          >
             <span
               className={`w-2 h-8 rounded-md mr-2 ${
                 activeSection === section.id
@@ -54,8 +58,7 @@ const ArticleNavigation: React.FC<ArticleNavigationProps> = ({ sections }) => {
                   : 'bg-primary-100'
               }`}
             ></span>
-            <button
-              onClick={() => scrollToSection(section.id)} // Scroll to section on click
+            <div
               className={`block w-full text-left p-2 rounded ${
                 activeSection === section.id
                   ? ' text-primary-400 font-bold'
@@ -63,8 +66,8 @@ const ArticleNavigation: React.FC<ArticleNavigationProps> = ({ sections }) => {
               }`}
             >
               {section.title}
-            </button>
-          </li>
+            </div>
+          </button>
         ))}
       </ul>
     </div>

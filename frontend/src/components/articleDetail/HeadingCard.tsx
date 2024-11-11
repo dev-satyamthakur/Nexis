@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TopicChips from '../TopicChips';
+import { Heart } from 'lucide-react';
 
 interface IHeadingCard {
   topic: string;
@@ -16,8 +17,17 @@ const HeadingCard: React.FC<IHeadingCard> = ({
   publishedDate,
   readTime,
 }) => {
+  const [liked, setLiked] = useState(false); // State to track if liked
+  const [showPopover, setShowPopover] = useState(false); // State to control popover visibility
+
+  const toggleLike = () => {
+    setLiked(!liked); // Toggle the liked state
+    setShowPopover(true); // Show the popover
+    setTimeout(() => setShowPopover(false), 2000); // Hide popover after 2 seconds
+  };
+
   return (
-    <div className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-8 pb-8 pt-40 h-96 max-w-full mx-auto">
+    <div className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-4 pb-4 pt-20 h-80 max-w-full mx-auto sm:px-8 sm:pb-8 sm:pt-40 sm:h-96">
       <img
         src={imageUrl}
         alt="University of Southern California"
@@ -27,10 +37,30 @@ const HeadingCard: React.FC<IHeadingCard> = ({
       <div className="z-10">
         <TopicChips topic={topic} />
       </div>
-      <h3 className="z-10 mt-2 text-3xl font-bold text-white">{title}</h3>
-      <div className="flex z-10 gap-x-3 font-normal overflow-hidden text-sm leading-6 text-gray-300">
-        <div>{publishedDate}</div>
-        <div>{readTime} min read</div>
+      <h3 className="z-10 mt-2 text-2xl font-bold text-white sm:text-3xl">
+        {title}
+      </h3>
+      <div className="flex flex-col sm:flex-row justify-between lg:items-end sm:items-start">
+        <div className="flex z-10 gap-x-2 font-normal overflow-hidden text-sm leading-6 text-gray-300 sm:gap-x-3">
+          <div>{publishedDate}</div>
+          <p>&#8226;</p>
+          <div>{readTime} min read</div>
+        </div>
+        <div className="flex justify-start items-center z-10 mt-2 sm:mt-0">
+          {showPopover && (
+            <div className={`text-white text-sm mr-2 transition-all`}>
+              {liked ? 'Added to your favorites' : 'Removed from favorites'}
+            </div>
+          )}
+          <div
+            onClick={toggleLike}
+            className={`flex items-center justify-center w-8 h-8 rounded-full cursor-pointer transition-colors duration-300 ${
+              liked ? 'bg-red-500' : 'bg-gray-300'
+            }`}
+          >
+            <Heart color={liked ? 'white' : 'black'} size={20} />
+          </div>
+        </div>
       </div>
     </div>
   );
