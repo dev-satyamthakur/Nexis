@@ -46,9 +46,9 @@ const HeadingCard: React.FC<IHeadingCard> = ({
           <p>&#8226;</p>
           <div>{readTime} min read</div>
         </div>
-        <div className="flex justify-start items-center z-10 mt-2 sm:mt-0">
+        <div className="flex flex-row-reverse sm:flex-row justify-end items-center z-10 mt-2 sm:mt-0">
           {showPopover && (
-            <div className={`text-white text-sm mr-2 transition-all`}>
+            <div className={`text-white text-sm ml-2 mr-2 transition-all`}>
               {liked ? 'Added to your favorites' : 'Removed from favorites'}
             </div>
           )}
