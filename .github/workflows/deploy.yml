@@ -1,0 +1,67 @@
+name: Deploy Backend to VM
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install Dependencies
+        run: npm install
+        
+      - name: Build
+        run: npm run build
+        
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo -e "Host vm\n\tHostName ${{ secrets.VM_HOST }}\n\tUser ${{ secrets.VM_USERNAME }}\n\tIdentityFile ~/.ssh/deploy_key\n\tStrictHostKeyChecking no" > ~/.ssh/config
+          
+      - name: Deploy to VM
+        run: |
+          # Create a temporary directory for backend files
+          ssh vm 'mkdir -p /tmp/backend-deploy'
+          
+          # Copy only the backend files to VM
+          scp -r backend/* vm:/tmp/backend-deploy/
+          
+          # SSH into VM and update the application
+          ssh vm '
+            # Move to app directory
+            cd ~/api/backend && \
+            
+            # Preserve important files
+            cp ecosystem.config.js /tmp/backend-deploy/ 2>/dev/null || true && \
+            cp .env /tmp/backend-deploy/ 2>/dev/null || true && \
+            
+            # Remove old files except node_modules and preserved files
+            rm -rf $(ls -A | grep -v "node_modules") && \
+            
+            # Copy new files
+            cp -r /tmp/backend-deploy/* . && \
+            
+            # Install dependencies and restart using ecosystem file
+            yarn install && \
+            yarn run build && \
+            pm2 restart ecosystem.config.js && \
+            
+            # Cleanup
+            rm -rf /tmp/backend-deploy'
