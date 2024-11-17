@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - 'backend/**'
-  # Add manual trigger
   workflow_dispatch:
 
 jobs:
@@ -16,93 +15,50 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Debug Secrets Length
-        run: |
-          echo "VM_HOST length: ${#VM_HOST}"
-          echo "VM_USERNAME length: ${#VM_USERNAME}"
-          echo "First few characters of VM_HOST: ${VM_HOST:0:4}..."
-          echo "First few characters of VM_USERNAME: ${VM_USERNAME:0:2}..."
-        env:
-          VM_HOST: ${{ secrets.VM_HOST }}
-          VM_USERNAME: ${{ secrets.VM_USERNAME }}
-          
-      - name: Check SSH Key Format
-        run: |
-          if [[ "${{ secrets.SSH_PRIVATE_KEY }}" == *"BEGIN"* ]]; then
-            echo "SSH key appears to have the correct header"
-          else
-            echo "SSH key is missing the expected header"
-          fi
-          echo "SSH key length: ${#SSH_PRIVATE_KEY}"
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      # Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Configure SSH Known Hosts
-        run: |
-          mkdir -p ~/.ssh
-          touch ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
-          ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
-      
+      # Set up Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-        
-      - name: Setup SSH
+
+      # Set up SSH access
+      - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          
-          # Write SSH config with debug output
-          echo "Writing SSH config..."
-          
-          cat > ~/.ssh/config << EOF
-          Host vm
-              HostName ${{ secrets.VM_HOST }}
-              User ${{ secrets.VM_USERNAME }}
-              IdentityFile ~/.ssh/deploy_key
-              StrictHostKeyChecking no
-          EOF
-          
-          echo "SSH config created. Contents (excluding sensitive data):"
-          cat ~/.ssh/config | grep -v "HostName\|User"
-          
-          echo "File permissions:"
-          ls -la ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/github_actions
+          chmod 600 ~/.ssh/github_actions
 
-      - name: Attempt SSH Connection
+          # Add VM to known hosts
+          ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      # Test SSH connection
+      - name: Test SSH Connection
         run: |
-          ssh -vvv vm 'echo "SSH connection successful"'
-          
-      - name: List Files for Debugging
+          ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_HOST }} "echo 'SSH connection successful'"
+
+      # Deploy files to the VM
+      - name: Deploy Backend
         run: |
-          echo "Current working directory: $(pwd)"
-          ls -l
-          
-      - name: Deploy to VM
-        run: |
-          echo "Attempting SSH connection..."
-          # Try SSH with verbose output
-          ssh -v vm 'echo "SSH connection successful"'
-          
-          echo "Creating temporary directory..."
-          ssh vm 'mkdir -p /tmp/backend-deploy'
-          
-          echo "Copying files..."
-          scp -r ./* vm:/tmp/backend-deploy/
-          
-          echo "Deploying..."
-          ssh vm '
+          echo "Creating temporary directory on VM..."
+          ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_HOST }} "mkdir -p /tmp/backend-deploy"
+
+          echo "Copying backend files to VM..."
+          scp -i ~/.ssh/github_actions -o StrictHostKeyChecking=no -r ./* ${{ secrets.VM_USERNAME }}@${{ secrets.VM_HOST }}:/tmp/backend-deploy/
+
+          echo "Deploying backend on VM..."
+          ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_HOST }} "
             cd ~/api/backend && \
             cp ecosystem.config.js /tmp/backend-deploy/ 2>/dev/null || true && \
             cp .env /tmp/backend-deploy/ 2>/dev/null || true && \
-            rm -rf $(ls -A | grep -v "node_modules") && \
+            rm -rf \$(ls -A | grep -v 'node_modules') && \
             cp -r /tmp/backend-deploy/* . && \
             yarn install && \
             yarn run build && \
             pm2 restart ecosystem.config.js && \
-            rm -rf /tmp/backend-deploy'
+            rm -rf /tmp/backend-deploy
+          "
