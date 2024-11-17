@@ -38,6 +38,13 @@ jobs:
           echo "SSH key length: ${#SSH_PRIVATE_KEY}"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Configure SSH Known Hosts
+        run: |
+          mkdir -p ~/.ssh
+          touch ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
       
       - name: Setup Node.js
         uses: actions/setup-node@v3
