@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - 'backend/**'
+  # Add manual trigger
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -90,7 +92,7 @@ jobs:
             cp .env /tmp/backend-deploy/ 2>/dev/null || true && \
             rm -rf $(ls -A | grep -v "node_modules") && \
             cp -r /tmp/backend-deploy/* . && \
-            npm install && \
-            npm run build && \
+            yarn install && \
+            yarn run build && \
             pm2 restart ecosystem.config.js && \
             rm -rf /tmp/backend-deploy'
