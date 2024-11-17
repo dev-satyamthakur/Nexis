@@ -73,6 +73,10 @@ jobs:
           
           echo "File permissions:"
           ls -la ~/.ssh/
+
+      - name: Attempt SSH Connection
+        run: |
+          ssh -vvv vm 'echo "SSH connection successful"'
           
       - name: List Files for Debugging
         run: |
