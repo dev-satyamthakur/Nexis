@@ -34,9 +34,6 @@ app.get("/api/protected", protect, (req: Request, res: Response) => {
 app.use("/test", (req, res) => {
   res.json({ message: "It works" });
 });
-app.use("/api/test", (req, res) => {
-  res.json({ message: "It works" });
-});
 app.use("/api/auth", authRoutes);
 app.use("/api/articles", articleRoutes);
 app.use("/api/favorite", favoriteRoutes);
