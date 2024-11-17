@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { ISection } from '../../pages/ArticleDetail';
 
 interface ArticleNavigationProps {
-  sections: { id: string; title: string }[]; // Array of sections
+  sections: ISection[]; // Array of sections
 }
 
 const ArticleNavigation: React.FC<ArticleNavigationProps> = ({ sections }) => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const handleScroll = () => {
-    const scrollPosition = window.scrollY;
+    const scrollPosition = window.scrollY + window.innerHeight / 2;
 
     sections.forEach((section) => {
       const sectionElement = document.getElementById(section.id);
@@ -17,7 +18,7 @@ const ArticleNavigation: React.FC<ArticleNavigationProps> = ({ sections }) => {
         const sectionHeight = sectionElement.offsetHeight;
 
         if (
-          scrollPosition >= sectionTop - 100 &&
+          scrollPosition >= sectionTop &&
           scrollPosition < sectionTop + sectionHeight
         ) {
           setActiveSection(section.id);

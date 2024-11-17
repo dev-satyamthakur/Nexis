@@ -21,9 +21,9 @@ const topicColorMap: Record<string, TopicColors> = {
     indicatorColor: 'bg-blue-400',
   },
   Technology: {
-    primary: 'text-gray-800',
-    bg: 'bg-gray-200',
-    indicatorColor: 'bg-gray-400',
+    primary: 'text-purple-800',
+    bg: 'bg-purple-200',
+    indicatorColor: 'bg-purple-400',
   },
   'Artificial Intelligence': {
     primary: 'text-purple-700',

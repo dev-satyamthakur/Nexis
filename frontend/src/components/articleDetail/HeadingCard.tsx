@@ -3,11 +3,11 @@ import TopicChips from '../TopicChips';
 import { Heart } from 'lucide-react';
 
 interface IHeadingCard {
-  topic: string;
-  title: string;
-  imageUrl: string;
-  publishedDate: string;
-  readTime: number; // in minutes
+  topic: string | undefined;
+  title: string | undefined;
+  imageUrl: string | undefined;
+  publishedDate: string | undefined;
+  readTime: number | undefined; // in minutes
 }
 
 const HeadingCard: React.FC<IHeadingCard> = ({

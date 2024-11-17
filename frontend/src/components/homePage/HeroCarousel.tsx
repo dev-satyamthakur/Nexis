@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { carouselItems } from '../../mocks/carouselData';
 import { Link } from 'react-router-dom';
+import { axiosInstance } from '../../config/axios';
+import { CarouselItem } from '../../interfaces/carouselItem';
+import { carouselItems as mockData } from '../../mocks/carouselData';
+import { formatDate } from '../../utils/dateUtils';
 
 const HeroCarousel: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
 
   const handleNext = () => {
     if (!isAnimating) {
@@ -33,50 +37,68 @@ const HeroCarousel: React.FC = () => {
     }, 5000); // Change slide every 5 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [carouselItems.length]);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await axiosInstance.get(`/api/articles`);
+        setCarouselItems(response.data.data);
+      } catch (error) {
+        console.error('Failed to fetch articles:', error);
+        setCarouselItems(mockData); // Set to mock data on error
+      }
+    };
+
+    fetchArticles();
+  }, []); // Empty dependency array ensures this runs only once
 
   return (
     <div className="container">
       <div id="carousel" className="relative w-full">
         {/* Carousel wrapper */}
         <div className="relative mt-4 h-56 overflow-hidden rounded-xl md:h-[50vh]">
-          {carouselItems.map((item, index) => (
-            <Link
-              key={item.id}
-              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                currentSlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
-              }`}
-              to={'/article/1'}
-            >
-              <img
-                src={item.imageSrc}
-                alt={item.altText}
-                className="absolute block w-full h-full object-cover -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              />
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent" />
-              {/* Title, Published Date, and Read Time */}
-              <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-center text-white m-2">
-                <h2 className="text-3xl mb-1 font-semibold">{item.title}</h2>
-                <p className="text-sm">
-                  {item.publishedDate} &bull; {item.readTime}
-                </p>
-              </div>
-            </Link>
-          ))}
+          {carouselItems.length === 0 ? (
+            <p>No items available</p>
+          ) : (
+            carouselItems.map((item, index) => (
+              <Link
+                key={item._id}
+                className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                  currentSlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                }`}
+                to={`/article/${item._id}`}
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  className="absolute block w-full h-full object-cover -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent" />
+                {/* Title, Published Date, and Read Time */}
+                <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-center text-white m-2">
+                  <h2 className="text-3xl mb-1 font-semibold">{item.title}</h2>
+                  <p className="text-sm">
+                    {formatDate(item.postDate)} &bull; {item.readTime} min read
+                  </p>
+                </div>
+              </Link>
+            ))
+          )}
         </div>
 
         {/* Slider indicators */}
         <div className="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3">
-          {carouselItems.map((item) => (
+          {carouselItems.map((item, index) => (
             <button
-              key={item.id}
+              key={item._id}
               type="button"
               className={`w-3 h-3 rounded-full ${
-                currentSlide === item.id ? 'bg-primary-300' : 'bg-gray-100'
+                currentSlide === index ? 'bg-primary-300' : 'bg-gray-100'
               }`}
-              aria-label={`Slide ${item.id + 1}`}
-              onClick={() => setCurrentSlide(item.id)}
+              aria-label={`Slide ${index + 1}`}
+              onClick={() => setCurrentSlide(index)}
             ></button>
           ))}
         </div>

@@ -1,9 +1,10 @@
+import { formatDate } from '../../utils/dateUtils';
 import TopicChips from '../TopicChips';
 
 interface IRelatedArticlesCard {
   topic: string;
   title: string;
-  publishedDate: string;
+  publishedDate: number;
   imageUrl: string;
   readingTime: number; // in minutes
 }
@@ -12,7 +13,7 @@ const RelatedArticlesCard: React.FC<IRelatedArticlesCard> = (props) => {
   const { topic, title, publishedDate, imageUrl, readingTime } = props;
 
   return (
-    <div className="max-w-sm bg-gray-100 transition-all transform hover:shadow-md hover:cursor-pointer rounded-2xl overflow-hidden">
+    <div className="max-w-sm bg-gray-100 hover:cursor-pointer rounded-2xl overflow-hidden">
       <div className="px-4 mt-4">
         <img
           src={imageUrl}
@@ -26,7 +27,7 @@ const RelatedArticlesCard: React.FC<IRelatedArticlesCard> = (props) => {
       <div className="px-4 mb-4">
         <h2 className="text-xl mt-2 font-semibold text-gray-800">{title}</h2>
         <div className="flex space-x-2 mt-2 items-center font-normal text-sm">
-          <p>{publishedDate}</p>
+          <p>{formatDate(publishedDate)}</p>
           <p>&#8226;</p>
           <p>{readingTime} min Read</p>
         </div>

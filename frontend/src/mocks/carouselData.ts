@@ -1,56 +1,44 @@
-interface CarouselItem {
-  id: number;
-  imageSrc: string;
-  altText: string;
-  title: string;
-  publishedDate: string;
-  readTime: string;
-}
+import { CarouselItem } from '../interfaces/carouselItem';
 
 export const carouselItems: CarouselItem[] = [
   {
-    id: 0,
-    imageSrc:
+    _id: '0',
+    imageUrl:
       'https://alleninstitute.org/wp-content/uploads/2024/05/Quantumconsciousness2-ezgif.com-crop.jpg',
-    altText: 'Slide 1',
     title: 'The Quantum Consciousness',
-    publishedDate: 'October 12, 2024',
-    readTime: '5 min read',
+    postDate: 1697068800000,
+    readTime: 5,
   },
   {
-    id: 1,
-    imageSrc:
+    _id: '1',
+    imageUrl:
       'https://images.newscientist.com/wp-content/uploads/2019/09/16145926/new-scientist-full.jpg',
-    altText: 'Slide 2',
     title: 'Exploring the Unknown',
-    publishedDate: 'October 18, 2024',
-    readTime: '3 min read',
+    postDate: 1697356800000,
+    readTime: 3,
   },
   {
-    id: 2,
-    imageSrc:
+    _id: '2',
+    imageUrl:
       'https://alleninstitute.org/wp-content/uploads/2024/05/Quantumconsciousness2-ezgif.com-crop.jpg',
-    altText: 'Slide 3',
     title: 'The Mind-Body Problem',
-    publishedDate: 'October 20, 2024',
-    readTime: '4 min read',
+    postDate: 1697443200000,
+    readTime: 2,
   },
   {
-    id: 3,
-    imageSrc:
+    _id: '3',
+    imageUrl:
       'https://images.newscientist.com/wp-content/uploads/2019/09/16145926/new-scientist-full.jpg',
-    altText: 'Slide 4',
     title: 'Cosmic Mysteries Unveiled',
-    publishedDate: 'October 22, 2024',
-    readTime: '6 min read',
+    postDate: 1697529600000,
+    readTime: 6,
   },
   {
-    id: 4,
-    imageSrc:
+    _id: '4',
+    imageUrl:
       'https://alleninstitute.org/wp-content/uploads/2024/05/Quantumconsciousness2-ezgif.com-crop.jpg',
-    altText: 'Slide 5',
     title: 'Neural Networks and AI',
-    publishedDate: 'October 24, 2024',
-    readTime: '8 min read',
+    postDate: 1697616000000,
+    readTime: 8,
   },
 ];
