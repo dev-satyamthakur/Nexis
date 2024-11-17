@@ -17,6 +17,28 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - name: Debug Secrets Length
+        run: |
+          echo "VM_HOST length: ${#VM_HOST}"
+          echo "VM_USERNAME length: ${#VM_USERNAME}"
+          echo "First few characters of VM_HOST: ${VM_HOST:0:4}..."
+          echo "First few characters of VM_USERNAME: ${VM_USERNAME:0:2}..."
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_USERNAME: ${{ secrets.VM_USERNAME }}
+          
+      - name: Check SSH Key Format
+        run: |
+          if [[ "${{ secrets.SSH_PRIVATE_KEY }}" == *"BEGIN"* ]]; then
+            echo "SSH key appears to have the correct header"
+          else
+            echo "SSH key is missing the expected header"
+          fi
+          
+          echo "SSH key length: ${#SSH_PRIVATE_KEY}"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -33,41 +55,44 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          cat >> ~/.ssh/config << EOF
+          
+          # Write SSH config with debug output
+          echo "Writing SSH config..."
+          
+          cat > ~/.ssh/config << EOF
           Host vm
-            HostName ${{ secrets.VM_HOST }}
-            User ${{ secrets.VM_USERNAME }}
-            IdentityFile ~/.ssh/deploy_key
-            StrictHostKeyChecking no
-          EOF
+              HostName ${{ secrets.VM_HOST }}
+              User ${{ secrets.VM_USERNAME }}
+              IdentityFile ~/.ssh/deploy_key
+              StrictHostKeyChecking no
+EOF
+          
+          echo "SSH config created. Contents (excluding sensitive data):"
+          cat ~/.ssh/config | grep -v "HostName\|User"
+          
+          echo "File permissions:"
+          ls -la ~/.ssh/
           
       - name: Deploy to VM
         run: |
-          # Create a temporary directory for backend files
+          echo "Attempting SSH connection..."
+          # Try SSH with verbose output
+          ssh -v vm 'echo "SSH connection successful"'
+          
+          echo "Creating temporary directory..."
           ssh vm 'mkdir -p /tmp/backend-deploy'
           
-          # Copy only the backend files to VM
+          echo "Copying files..."
           scp -r backend/* vm:/tmp/backend-deploy/
           
-          # SSH into VM and update the application
+          echo "Deploying..."
           ssh vm '
-            # Move to app directory
             cd ~/api/backend && \
-            
-            # Preserve important files
             cp ecosystem.config.js /tmp/backend-deploy/ 2>/dev/null || true && \
             cp .env /tmp/backend-deploy/ 2>/dev/null || true && \
-            
-            # Remove old files except node_modules and preserved files
             rm -rf $(ls -A | grep -v "node_modules") && \
-            
-            # Copy new files
             cp -r /tmp/backend-deploy/* . && \
-            
-            # Install dependencies and restart using ecosystem file
-            yarn install && \
-            yarn run build && \
+            npm install && \
+            npm run build && \
             pm2 restart ecosystem.config.js && \
-            
-            # Cleanup
             rm -rf /tmp/backend-deploy'
