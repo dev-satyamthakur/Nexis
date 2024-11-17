@@ -73,6 +73,11 @@ jobs:
           echo "File permissions:"
           ls -la ~/.ssh/
           
+      - name: List Files for Debugging
+        run: |
+          echo "Current working directory: $(pwd)"
+          ls -l
+          
       - name: Deploy to VM
         run: |
           echo "Attempting SSH connection..."
@@ -83,7 +88,7 @@ jobs:
           ssh vm 'mkdir -p /tmp/backend-deploy'
           
           echo "Copying files..."
-          scp -r backend/* vm:/tmp/backend-deploy/
+          scp -r ./backend/* vm:/tmp/backend-deploy/
           
           echo "Deploying..."
           ssh vm '
