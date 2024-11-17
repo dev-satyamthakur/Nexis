@@ -4,7 +4,6 @@ import HeadingCard from '../components/articleDetail/HeadingCard';
 import RelatedArticlesCard from '../components/articleDetail/RelatedArticlesCard';
 import ShareArticle from '../components/articleDetail/ShareArticle';
 import ArticleNavigation from '../components/articleDetail/ArticleNavigation';
-import axios from 'axios';
 import { axiosInstance } from '../config/axios';
 import { formatDate } from '../utils/dateUtils'; // Import the utility function
 import { getCapitalizedString } from '../utils/stringUtils';
@@ -109,16 +108,18 @@ const ArticleDetail: React.FC = () => {
         {/* Left Side: Article Details */}
         <div className="col-span-1 lg:col-span-8 space-y-4">
           {/* Heading Card */}
-          <HeadingCard
-            imageUrl={article?.data.imageUrl}
-            topic={
-              article?.data.topics[0]?.charAt(0).toUpperCase() +
-              article?.data.topics[0]?.slice(1)
-            }
-            title={article?.data.title}
-            publishedDate={formatDate(article?.data.postDate)}
-            readTime={article?.data.readTime}
-          />
+          {article && (
+            <HeadingCard
+              imageUrl={article.data.imageUrl}
+              topic={
+                article.data.topics[0]?.charAt(0).toUpperCase() +
+                article.data.topics[0]?.slice(1)
+              }
+              title={article.data.title}
+              publishedDate={formatDate(article.data.postDate)}
+              readTime={article.data.readTime}
+            />
+          )}
 
           {/* Article Content */}
           <div className="mt-4 mb-8">
