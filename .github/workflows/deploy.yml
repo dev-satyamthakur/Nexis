@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - 'backend/**'
-  # Add manual trigger
   workflow_dispatch:
 
 jobs:
@@ -27,7 +26,7 @@ jobs:
         env:
           VM_HOST: ${{ secrets.VM_HOST }}
           VM_USERNAME: ${{ secrets.VM_USERNAME }}
-          
+      
       - name: Check SSH Key Format
         run: |
           if [[ "${{ secrets.SSH_PRIVATE_KEY }}" == *"BEGIN"* ]]; then
@@ -43,22 +42,20 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          
+      
       - name: Install Dependencies
         run: npm install
-        
+      
       - name: Build
         run: npm run build
-        
+      
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           
-          # Write SSH config with debug output
           echo "Writing SSH config..."
-          
           cat > ~/.ssh/config << EOF
           Host vm
               HostName ${{ secrets.VM_HOST }}
@@ -69,28 +66,26 @@ jobs:
           
           echo "SSH config created. Contents (excluding sensitive data):"
           cat ~/.ssh/config | grep -v "HostName\|User"
-          
           echo "File permissions:"
           ls -la ~/.ssh/
-          
+      
       - name: List Files for Debugging
         run: |
           echo "Current working directory: $(pwd)"
           ls -l
-          
+      
       - name: Deploy to VM
         run: |
           echo "Attempting SSH connection..."
-          # Try SSH with verbose output
           ssh -v vm 'echo "SSH connection successful"'
           
-          echo "Creating temporary directory..."
+          echo "Creating temporary directory on the remote server..."
           ssh vm 'mkdir -p /tmp/backend-deploy'
           
-          echo "Copying files..."
-          scp -r ./* vm:/tmp/backend-deploy/
+          echo "Copying files using rsync..."
+          rsync -av --exclude-from='.scpignore' ./ vm:/tmp/backend-deploy/
           
-          echo "Deploying..."
+          echo "Deploying application..."
           ssh vm '
             cd ~/api/backend && \
             cp ecosystem.config.js /tmp/backend-deploy/ 2>/dev/null || true && \
