@@ -8,6 +8,7 @@ import { axiosInstance } from '../config/axios';
 import { formatDate } from '../utils/dateUtils'; // Import the utility function
 import { getCapitalizedString } from '../utils/stringUtils';
 import { DotLoader } from 'react-spinners';
+import DOMPurify from 'dompurify';
 
 // Define the body structure of the article
 interface IArticleBody {
@@ -47,6 +48,31 @@ export interface ISection {
 }
 
 const ArticleDetail: React.FC = () => {
+  const sanitizedBody = (body: string) => {
+    return DOMPurify.sanitize(body, {
+      ALLOWED_TAGS: [
+        'p',
+        'br',
+        'ul',
+        'ol',
+        'li',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'img',
+        'figure',
+        'figcaption',
+        'strong',
+        'em',
+        'blockquote',
+      ],
+      ALLOWED_ATTR: ['src', 'alt', 'width', 'height', 'class'],
+      ALLOWED_URI_REGEXP: /^https:\/\//i,
+    });
+  };
+
   const { id } = useParams();
   const [article, setArticle] = useState<IArticleResponse | null>(null);
   const [sectionsList, setSectionsList] = useState<ISection[]>([]);
@@ -102,6 +128,8 @@ const ArticleDetail: React.FC = () => {
     );
   }
 
+  console.log(article?.data.body[0].body);
+
   return (
     <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-48 mt-4">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -129,7 +157,12 @@ const ArticleDetail: React.FC = () => {
                   <h2 className="text-2xl font-semibold text-gray-800 mb-2">
                     {item.heading}
                   </h2>
-                  <p className="text-gray-600 leading-relaxed">{item.body}</p>
+                  <div
+                    className="prose prose-lg max-w-none"
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizedBody(item.body),
+                    }}
+                  />
                 </div>
               </div>
             ))}

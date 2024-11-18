@@ -1,10 +1,11 @@
 import mongoose, { Document, Schema } from "mongoose";
+import sanitizeHtml from "sanitize-html";
 
 // Section interface
 type IArticleSection = {
   id: string;
   heading: string;
-  body: string;
+  body: string; // This will now contain HTML with images, headings, etc.
 };
 
 // Article interface
@@ -14,11 +15,41 @@ export interface IArticle extends Document {
   imageUrl: string;
   author: number;
   postDate: number;
-  readTime: number; // in mins
+  readTime: number;
   topics: string[];
 }
 
-// Section schema
+// Sanitization options - allowing rich HTML content
+const sanitizeOptions = {
+  allowedTags: [
+    "p",
+    "br",
+    "ul",
+    "ol",
+    "li",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "img",
+    "figure",
+    "figcaption",
+    "strong",
+    "em",
+    "blockquote",
+  ],
+  allowedAttributes: {
+    img: ["src", "alt", "width", "height", "class"],
+    figure: ["class"],
+    figcaption: ["class"],
+    "*": ["class"], // Allow classes on all elements for styling
+  },
+  allowedSchemes: ["http", "https"],
+  allowedSchemesAppliedToAttributes: ["src"],
+};
+
+// Section schema with enhanced sanitization
 const articleSectionSchema = new Schema<IArticleSection>({
   id: {
     type: String,
@@ -27,21 +58,23 @@ const articleSectionSchema = new Schema<IArticleSection>({
   heading: {
     type: String,
     required: true,
+    trim: true,
   },
   body: {
     type: String,
     required: true,
+    set: (content: string) => sanitizeHtml(content, sanitizeOptions),
   },
 });
 
-// Article schema
 const articleSchema = new Schema<IArticle>({
   title: {
     type: String,
     required: true,
+    trim: true,
   },
   body: {
-    type: [articleSectionSchema], // Use the section schema for the array
+    type: [articleSectionSchema],
     required: true,
   },
   imageUrl: {

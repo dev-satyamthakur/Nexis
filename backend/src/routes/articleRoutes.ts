@@ -4,6 +4,7 @@ import {
   getRelatedArticles,
   postArticle,
   getArticleById,
+  deleteArticle,
 } from "../controllers/articleController";
 import { protect } from "../middleware/authMiddleware";
 
@@ -14,5 +15,6 @@ router.get("/", getArticles);
 router.post("/", postArticle);
 router.get("/related/:articleId", getRelatedArticles);
 router.get("/:articleId", getArticleById);
+router.delete("/:articleId", deleteArticle);
 
 export default router;

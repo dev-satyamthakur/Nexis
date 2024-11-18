@@ -39,7 +39,9 @@ export const postArticle = async (req: Request, res: Response) => {
       topics: topics,
     });
 
-    res.status(201).json({ message: "Article Created" });
+    res
+      .status(201)
+      .json({ message: "Article Created", id: articleRespose._id });
   } catch (err) {
     res.status(500).json({ message: "Server Error" });
   }
@@ -85,6 +87,24 @@ export const getArticleById = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({ success: true, data: article });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// @desc Delete an article by ID
+// @route DELETE /api/articles/:articleId
+export const deleteArticle = async (req: Request, res: Response) => {
+  const { articleId } = req.params;
+  try {
+    // Attempt to delete the article by its ID
+    const deletedArticle = await Article.findByIdAndDelete(articleId);
+
+    if (!deletedArticle) {
+      return res.status(404).json({ message: "Article not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Article deleted" });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
