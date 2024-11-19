@@ -16,6 +16,7 @@ export interface IArticle extends Document {
   author: number;
   postDate: number;
   readTime: number;
+  totalLikes: number;
   topics: string[];
 }
 
@@ -82,6 +83,10 @@ const articleSchema = new Schema<IArticle>({
     required: true,
   },
   author: {
+    type: Number,
+    required: true,
+  },
+  totalLikes: {
     type: Number,
     required: true,
   },

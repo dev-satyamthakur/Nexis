@@ -10,7 +10,7 @@ export const getArticles = async (req: Request, res: Response) => {
     const articles = await Article.find({
       postDate: { $lte: currentEpochTime },
     })
-      .sort({ postDate: -1 }) // Sort by postDate descending
+      .sort({ postDate: 1 }) // Sort by postDate descending
       .limit(3); // Limit to 5 articles
 
     res.status(200).json({
@@ -27,13 +27,22 @@ export const getArticles = async (req: Request, res: Response) => {
 // @route POST /api/articles
 export const postArticle = async (req: Request, res: Response) => {
   try {
-    const { title, body, imageUrl, author, postDate, readTime, topics } =
-      req.body;
+    const {
+      title,
+      body,
+      imageUrl,
+      author,
+      postDate,
+      totalLikes,
+      readTime,
+      topics,
+    } = req.body;
     const articleRespose = await Article.create({
       title: title,
       body: body,
       imageUrl: imageUrl,
       author: author,
+      totalLikes: totalLikes,
       postDate: postDate,
       readTime: readTime,
       topics: topics,
@@ -66,7 +75,7 @@ export const getRelatedArticles = async (req: Request, res: Response) => {
     const relatedArticles = await Article.find({
       // _id: { $ne: articleId }, // Exclude the current article
       // topics: { $in: topics }, // Match articles that have at least one topic in the topics array
-    });
+    }).limit(3);
 
     res.status(200).json({ relatedArticles });
   } catch (error) {
@@ -107,5 +116,23 @@ export const deleteArticle = async (req: Request, res: Response) => {
     res.status(200).json({ success: true, message: "Article deleted" });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// @desc Get top 3 articles by total likes
+// @route GET /api/articles/top
+export const getMostLikedArticles = async (req: Request, res: Response) => {
+  try {
+    const topArticles = await Article.find({})
+      .sort({ totalLikes: -1 }) // Sort by totalLikes descending
+      .limit(3); // Limit to 3 articles
+
+    res.status(200).json({
+      success: true,
+      count: topArticles.length,
+      data: topArticles,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
   }
 };
