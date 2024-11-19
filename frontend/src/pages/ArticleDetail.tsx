@@ -178,6 +178,8 @@ const ArticleDetail: React.FC = () => {
         </div>
       </div>
       {/* Here comes the related articles section */}
+      <div className="border-b border-neutral-600 mb-8"></div>
+
       <section className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">
           Related Articles

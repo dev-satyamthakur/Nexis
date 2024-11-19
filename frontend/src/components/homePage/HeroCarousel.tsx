@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { axiosInstance } from '../../config/axios';
-import { CarouselItem } from '../../interfaces/carouselItem';
+import { ArticleItem } from '../../interfaces/articlelItem';
 import { carouselItems as mockData } from '../../mocks/carouselData';
 import { formatDate } from '../../utils/dateUtils';
 import { DotLoader } from 'react-spinners';
@@ -9,7 +9,7 @@ import { DotLoader } from 'react-spinners';
 const HeroCarousel: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
+  const [carouselItems, setCarouselItems] = useState<ArticleItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const handleNext = () => {

@@ -1,6 +1,6 @@
 import HeroCarousel from '../components/homePage/HeroCarousel';
 import TopicsTabLayout from '../layouts/homePage/TopicsTabLayout';
-import PopularArticlesCard from '../components/homePage/PopularArticlesCard';
+import MostLikedArticlesCard from '../components/homePage/MostLikedArticlesCard';
 
 function HomePage() {
   return (
@@ -20,7 +20,7 @@ function HomePage() {
 
           {/* Right section - Most Liked Articles */}
           <div className="lg:col-span-1">
-            <PopularArticlesCard />
+            <MostLikedArticlesCard />
           </div>
         </div>
       </div>

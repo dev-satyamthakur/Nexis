@@ -10,8 +10,8 @@ export const getArticles = async (req: Request, res: Response) => {
     const articles = await Article.find({
       postDate: { $lte: currentEpochTime },
     })
-      .sort({ postDate: 1 }) // Sort by postDate descending
-      .limit(3); // Limit to 5 articles
+      .sort({ postDate: -1 }) // Sort by postDate descending
+      .limit(3); // Limit to 3 articles
 
     res.status(200).json({
       success: true,
@@ -83,6 +83,24 @@ export const getRelatedArticles = async (req: Request, res: Response) => {
   }
 };
 
+// @desc Get top 3 articles by total likes
+// @route GET /api/articles/top
+export const getMostLikedArticles = async (req: Request, res: Response) => {
+  try {
+    const topArticles = await Article.find({})
+      .sort({ totalLikes: -1 }) // Sort by totalLikes descending
+      .limit(3); // Limit to 3 articles
+
+    res.status(200).json({
+      success: true,
+      count: topArticles.length,
+      data: topArticles,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 // @desc Get a single article by ID
 // @route GET /api/articles/:articleId
 export const getArticleById = async (req: Request, res: Response) => {
@@ -116,23 +134,5 @@ export const deleteArticle = async (req: Request, res: Response) => {
     res.status(200).json({ success: true, message: "Article deleted" });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-// @desc Get top 3 articles by total likes
-// @route GET /api/articles/top
-export const getMostLikedArticles = async (req: Request, res: Response) => {
-  try {
-    const topArticles = await Article.find({})
-      .sort({ totalLikes: -1 }) // Sort by totalLikes descending
-      .limit(3); // Limit to 3 articles
-
-    res.status(200).json({
-      success: true,
-      count: topArticles.length,
-      data: topArticles,
-    });
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
   }
 };
