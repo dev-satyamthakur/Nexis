@@ -171,7 +171,11 @@ const ArticleDetail: React.FC = () => {
 
         {/* Right Side: Sticky Social Links and Navigation */}
         <div className="col-span-1 lg:col-span-4 lg:sticky lg:top-4 h-auto lg:h-screen">
-          <ShareArticle />
+          {article && (
+            <ShareArticle
+              postUrl={`${import.meta.env.VITE_PROD}/article/${article.data._id}`}
+            />
+          )}
           <div className="hidden lg:block lg:mt-8">
             <ArticleNavigation sections={sectionsList} />
           </div>

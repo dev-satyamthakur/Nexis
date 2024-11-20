@@ -1,4 +1,4 @@
-const ShareArticle = () => {
+const ShareArticle = ({ postUrl }: { postUrl: string }) => {
   return (
     <div className="bg-primary-400 shadow-lg rounded-xl p-4">
       <h2 className="text-lg text-white font-bold mb-4">Share this article</h2>
@@ -18,7 +18,12 @@ const ShareArticle = () => {
               fill="white"
             ></path>
           </svg>
-          <a href="#" className="text-white">
+          <a
+            href={``}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white"
+          >
             Instagram
           </a>
         </div>
@@ -37,7 +42,12 @@ const ShareArticle = () => {
               fill="white"
             ></path>
           </svg>
-          <a href="#" className="text-white">
+          <a
+            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white"
+          >
             Twitter
           </a>
         </div>
@@ -56,7 +66,12 @@ const ShareArticle = () => {
               fill="white"
             ></path>
           </svg>
-          <a href="#" className="text-white">
+          <a
+            href={`https://www.linkedin.com/shareArticle?url=${encodeURIComponent(postUrl)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white"
+          >
             LinkedIn
           </a>
         </div>
