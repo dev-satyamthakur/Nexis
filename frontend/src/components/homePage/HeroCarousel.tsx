@@ -44,7 +44,9 @@ const HeroCarousel: React.FC = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axiosInstance.get(`/api/articles`);
+        const response = await axiosInstance.get(
+          `/api/articles?type=minimised`,
+        );
         setCarouselItems(response.data.data);
       } catch (error) {
         console.error('Failed to fetch articles:', error);
