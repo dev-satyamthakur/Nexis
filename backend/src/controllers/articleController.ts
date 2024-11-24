@@ -6,6 +6,7 @@ import Article from "../models/Article";
 // @access Private
 export const getArticles = async (req: Request, res: Response) => {
   try {
+    const { type } = req.query;
     const currentEpochTime = Math.floor(Date.now());
     const articles = await Article.find({
       postDate: { $lte: currentEpochTime },
@@ -13,10 +14,24 @@ export const getArticles = async (req: Request, res: Response) => {
       .sort({ postDate: -1 }) // Sort by postDate descending
       .limit(3); // Limit to 3 articles
 
+    // Check if type is 'minimised'
+    let responseData;
+    if (type === "minimised") {
+      responseData = articles.map((article) => ({
+        _id: article._id,
+        title: article.title,
+        imageUrl: article.imageUrl,
+        postDate: article.postDate,
+        readTime: article.readTime,
+      }));
+    } else {
+      responseData = articles;
+    }
+
     res.status(200).json({
       success: true,
-      count: articles.length,
-      data: articles,
+      count: responseData.length,
+      data: responseData,
     });
   } catch (err) {
     res.status(500).json({ message: "Server Error" });
@@ -88,6 +103,7 @@ export const getRelatedArticles = async (req: Request, res: Response) => {
 export const getMostLikedArticles = async (req: Request, res: Response) => {
   try {
     const topArticles = await Article.find({})
+      .select("title totalLikes postDate _id")
       .sort({ totalLikes: -1 }) // Sort by totalLikes descending
       .limit(3); // Limit to 3 articles
 
