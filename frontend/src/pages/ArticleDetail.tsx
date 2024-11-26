@@ -24,11 +24,11 @@ interface IArticle {
   title: string;
   body: IArticleBody[];
   imageUrl: string;
-  author: number; // Assuming author is represented by an ID
-  postDate: number; // Assuming postDate is a timestamp
+  author: string;
+  postDate: number;
   readTime: number;
   topics: string[];
-  __v: number; // Version key, usually used by MongoDB
+  __v: number;
 }
 
 // Define the response structure
@@ -138,6 +138,7 @@ const ArticleDetail: React.FC = () => {
           {/* Heading Card */}
           {article && (
             <HeadingCard
+              articleId={article.data._id}
               imageUrl={article.data.imageUrl}
               topic={
                 article.data.topics[0]?.charAt(0).toUpperCase() +

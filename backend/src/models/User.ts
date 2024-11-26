@@ -1,19 +1,14 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IUser extends Document {
-  username: string;
   name: string;
   email: string;
-  password: string;
+  picture: string;
+  subId: string;
   favoriteArticles: mongoose.Types.ObjectId[];
 }
 
 const userSchema = new Schema<IUser>({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
   name: {
     type: String,
     required: true,
@@ -23,7 +18,11 @@ const userSchema = new Schema<IUser>({
     required: true,
     unique: true,
   },
-  password: {
+  picture: {
+    type: String,
+    required: true,
+  },
+  subId: {
     type: String,
     required: true,
   },
@@ -32,3 +31,5 @@ const userSchema = new Schema<IUser>({
 
 const User = mongoose.model<IUser>("User", userSchema);
 export default User;
+
+//6744dc8456da53f76ff6f634

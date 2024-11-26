@@ -6,6 +6,7 @@ import TopicsPage from './pages/TopicsPage';
 import { DotLoader } from 'react-spinners';
 import { useAuth0 } from '@auth0/auth0-react';
 import Footer from './layouts/Footer';
+import { LoginPage } from './pages/LoginPage';
 
 function App() {
   const { isLoading } = useAuth0();
@@ -25,6 +26,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/article/:id" element={<ArticleDetail />} />
         <Route path="/topics" element={<TopicsPage />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
       <Footer />
     </div>

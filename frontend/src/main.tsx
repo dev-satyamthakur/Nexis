@@ -26,7 +26,7 @@ const Auth0ProviderWithNavigate = ({
       domain={domain}
       clientId={clientId}
       authorizationParams={{
-        redirect_uri: window.location.origin,
+        redirect_uri: `${import.meta.env.VITE_DEV_URL}/login`,
       }}
       onRedirectCallback={onRedirectCallback}
       useRefreshTokens={true}

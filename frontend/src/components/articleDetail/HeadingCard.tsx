@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TopicChips from '../TopicChips';
 import { Heart } from 'lucide-react';
+import { axiosInstance } from '../../config/axios';
 
 interface IHeadingCard {
+  articleId: string;
   topic: string;
   title: string;
   imageUrl: string;
@@ -11,6 +13,7 @@ interface IHeadingCard {
 }
 
 const HeadingCard: React.FC<IHeadingCard> = ({
+  articleId,
   topic,
   imageUrl,
   title,
@@ -20,11 +23,51 @@ const HeadingCard: React.FC<IHeadingCard> = ({
   const [liked, setLiked] = useState(false); // State to track if liked
   const [showPopover, setShowPopover] = useState(false); // State to control popover visibility
 
+  const checkIfLikedByUser = async () => {
+    try {
+      const token = localStorage.getItem('jwtToken');
+      const response = await axiosInstance.get(
+        `/api/favorite/check/${articleId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      setLiked(response.data.isFavorite);
+      console.log('Check if liked by user called', response.data.isFavorite);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleLike = async () => {
+    try {
+      const token = localStorage.getItem('jwtToken');
+      const response = await axiosInstance.post(
+        `/api/favorite`,
+        { articleId: articleId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      setLiked(response.data.isLiked);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const toggleLike = () => {
-    setLiked(!liked); // Toggle the liked state
+    handleLike();
     setShowPopover(true); // Show the popover
     setTimeout(() => setShowPopover(false), 2000); // Hide popover after 2 seconds
   };
+
+  useEffect(() => {
+    checkIfLikedByUser();
+  }, []);
 
   return (
     <div className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-4 pb-4 pt-20 h-80 max-w-full mx-auto sm:px-8 sm:pb-8 sm:pt-40 sm:h-96">
