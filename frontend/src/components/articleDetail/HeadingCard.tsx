@@ -58,8 +58,8 @@ const HeadingCard: React.FC<IHeadingCard> = ({
     }
   };
 
-  const toggleLike = () => {
-    handleLike();
+  const toggleLike = async () => {
+    await handleLike();
     setShowPopover(true); // Show the popover
     setTimeout(() => setShowPopover(false), 2000); // Hide popover after 2 seconds
   };
