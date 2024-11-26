@@ -128,8 +128,6 @@ const ArticleDetail: React.FC = () => {
     );
   }
 
-  console.log(article?.data.body[0].body);
-
   return (
     <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-48 mt-4">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">

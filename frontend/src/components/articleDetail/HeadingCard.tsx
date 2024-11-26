@@ -35,7 +35,6 @@ const HeadingCard: React.FC<IHeadingCard> = ({
         },
       );
       setLiked(response.data.isFavorite);
-      console.log('Check if liked by user called', response.data.isFavorite);
     } catch (err) {
       console.log(err);
     }
@@ -67,7 +66,7 @@ const HeadingCard: React.FC<IHeadingCard> = ({
 
   useEffect(() => {
     checkIfLikedByUser();
-  }, []);
+  }, [articleId]);
 
   return (
     <div className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-4 pb-4 pt-20 h-80 max-w-full mx-auto sm:px-8 sm:pb-8 sm:pt-40 sm:h-96">

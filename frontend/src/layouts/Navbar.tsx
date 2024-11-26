@@ -27,9 +27,6 @@ function Navbar() {
     };
   }, []);
 
-  if (isAuthenticated) {
-    console.log(user);
-  }
   return (
     <nav className="bg-neutral-100 shadow-sm z-50">
       <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-48">
