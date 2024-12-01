@@ -110,6 +110,9 @@ const ArticleDetail: React.FC = () => {
         setArticle(articleResponse.data);
         setRelatedArticles(relatedArticlesResponse.data);
         setSectionsListFromArticleResponse(data); // Handle the fetched article data as needed
+
+        // page title
+        document.title = `${data.title} | NEXIS`;
       } catch (error) {
         console.error('Error fetching article:', error);
       } finally {

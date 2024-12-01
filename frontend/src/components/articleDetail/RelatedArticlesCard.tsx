@@ -13,7 +13,7 @@ const RelatedArticlesCard: React.FC<IRelatedArticlesCard> = (props) => {
   const { topic, title, publishedDate, imageUrl, readingTime } = props;
 
   return (
-    <div className="max-w-sm bg-gray-100 hover:cursor-pointer rounded-2xl overflow-hidden">
+    <div className="max-w-sm bg-gray-100 h-full hover:cursor-pointer rounded-2xl overflow-hidden">
       <div className="px-4 mt-4">
         <img
           src={imageUrl}

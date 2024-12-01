@@ -18,11 +18,7 @@ export const authUser = async (req: Request, res: Response) => {
         picture: picture,
         subId: sub,
       });
-
-      console.log(newUser);
       (userId as any) = newUser._id;
-
-      console.log(newUser);
     } else {
       console.log("User found");
       (userId as any) = user._id;
@@ -47,6 +43,7 @@ export const authUser = async (req: Request, res: Response) => {
 // Refresh Token path : /api/auth/refresh
 export const refreshToken = async (req: Request, res: Response) => {
   const { refreshToken } = req.body;
+  console.log("Inside /api/auth/refresh", refreshToken);
 
   if (!refreshToken) return res.sendStatus(401);
 
