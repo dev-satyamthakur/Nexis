@@ -80,7 +80,7 @@ const HeroCarousel: React.FC = () => {
                       ? 'opacity-100 z-10'
                       : 'opacity-0 z-0'
                   }`}
-                  to={`/article/${item._id}`}
+                  to={`/article/${item.title.split(' ').join('-')}-${item._id}`}
                 >
                   <img
                     src={item.imageUrl}

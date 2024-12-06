@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 
 export function LoginPage() {
   const { user } = useAuth0();
+  console.log(user);
   const navigate = useNavigate(); // Initialize useNavigate
   useEffect(() => {
     const loginUser = async () => {

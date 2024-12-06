@@ -1,8 +1,13 @@
 import HeroCarousel from '../components/homePage/HeroCarousel';
 import TopicsTabLayout from '../layouts/homePage/TopicsTabLayout';
 import MostLikedArticlesCard from '../components/homePage/MostLikedArticlesCard';
+import { useEffect } from 'react';
 
 function HomePage() {
+  useEffect(() => {
+    document.title = 'NEXIS';
+  }, []);
+
   return (
     <div>
       <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-48">
