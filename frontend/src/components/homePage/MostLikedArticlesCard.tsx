@@ -25,7 +25,7 @@ function MostLikedArticlesCard() {
         {topArticles.map((article, index) => (
           <Link
             key={article._id}
-            to={`/article/${articleTitleJoinWithHyphen(article.title)}-${article._id}`}
+            to={`/article/${articleTitleJoinWithHyphen(article.title)}`}
             className="block hover:bg-primary-500 rounded-lg p-4 transition duration-150"
           >
             <div className="flex items-start">
