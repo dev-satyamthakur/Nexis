@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
 import Article from "../models/Article";
+import {
+  getIdByTitle,
+  storeArticleMapping,
+} from "../services/articleTitleIdMappingDb";
 
 // @desc   Get all articles (only accessible to logged-in users)
 // @route  GET /api/articles
@@ -52,7 +56,7 @@ export const postArticle = async (req: Request, res: Response) => {
       readTime,
       topics,
     } = req.body;
-    const articleRespose = await Article.create({
+    const articleResponse = await Article.create({
       title: title,
       body: body,
       imageUrl: imageUrl,
@@ -63,9 +67,13 @@ export const postArticle = async (req: Request, res: Response) => {
       topics: topics,
     });
 
+    if (articleResponse) {
+      await storeArticleMapping(title, articleResponse._id as any);
+    }
+
     res
       .status(201)
-      .json({ message: "Article Created", id: articleRespose._id });
+      .json({ message: "Article Created", id: articleResponse._id });
   } catch (err) {
     res.status(500).json({ message: "Server Error" });
   }
@@ -75,9 +83,13 @@ export const postArticle = async (req: Request, res: Response) => {
 // @route GET /api/articles/related/:articleId
 export const getRelatedArticles = async (req: Request, res: Response) => {
   const { articleId } = req.params;
+
+  const articleProperTitle = articleId.split("-").join(" ");
+  const articleProperId = await getIdByTitle(articleProperTitle);
+
   try {
     // Find the article by its ID
-    const article = await Article.findById(articleId);
+    const article = await Article.findById(articleProperId);
 
     if (!article) {
       return res.status(404).json({ message: "Article not found" });
@@ -121,9 +133,13 @@ export const getMostLikedArticles = async (req: Request, res: Response) => {
 // @route GET /api/articles/:articleId
 export const getArticleById = async (req: Request, res: Response) => {
   const { articleId } = req.params;
+
+  const articleProperTitle = articleId.split("-").join(" ");
+  const articleProperId = await getIdByTitle(articleProperTitle);
+
   try {
     // Find the article by its ID
-    const article = await Article.findById(articleId);
+    const article = await Article.findById(articleProperId);
 
     if (!article) {
       return res.status(404).json({ message: "Article not found" });

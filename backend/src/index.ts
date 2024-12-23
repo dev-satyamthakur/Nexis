@@ -10,6 +10,10 @@ import { Request, Response } from "express";
 import authRoutes from "./routes/authRoutes";
 import articleRoutes from "./routes/articleRoutes";
 import favoriteRoutes from "./routes/favoriteRoutes";
+import {
+  getIdByTitle,
+  storeArticleMapping,
+} from "./services/articleTitleIdMappingDb";
 
 dotenv.config();
 const app = express();
@@ -44,7 +48,7 @@ app.get("/api/protected", protect, (req: Request, res: Response) => {
   });
 });
 // Routes
-app.use("/test", (req, res) => {
+app.use("/test", async (req, res) => {
   res.json({ message: "It works" });
 });
 app.use("/api/auth", authRoutes);
