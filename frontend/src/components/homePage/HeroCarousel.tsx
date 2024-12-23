@@ -81,7 +81,7 @@ const HeroCarousel: React.FC = () => {
                       ? 'opacity-100 z-10'
                       : 'opacity-0 z-0'
                   }`}
-                  to={`/article/${articleTitleJoinWithHyphen(item.title)}-${item._id}`}
+                  to={`/article/${articleTitleJoinWithHyphen(item.title)}`}
                 >
                   <img
                     src={item.imageUrl}

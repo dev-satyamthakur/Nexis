@@ -73,8 +73,7 @@ const ArticleDetail: React.FC = () => {
     });
   };
 
-  let { id } = useParams();
-  id = id?.split('-').pop();
+  const { id } = useParams();
 
   const [article, setArticle] = useState<IArticleResponse | null>(null);
   const [sectionsList, setSectionsList] = useState<ISection[]>([]);
