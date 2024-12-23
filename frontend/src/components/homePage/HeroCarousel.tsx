@@ -5,6 +5,7 @@ import { ArticleItem } from '../../interfaces/articlelItem';
 import { carouselItems as mockData } from '../../mocks/carouselData';
 import { formatDate } from '../../utils/dateUtils';
 import { DotLoader } from 'react-spinners';
+import { articleTitleJoinWithHyphen } from '../../utils/stringUtils';
 
 const HeroCarousel: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -80,7 +81,7 @@ const HeroCarousel: React.FC = () => {
                       ? 'opacity-100 z-10'
                       : 'opacity-0 z-0'
                   }`}
-                  to={`/article/${item.title.split(' ').join('-')}-${item._id}`}
+                  to={`/article/${articleTitleJoinWithHyphen(item.title)}-${item._id}`}
                 >
                   <img
                     src={item.imageUrl}
