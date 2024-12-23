@@ -1,5 +1,5 @@
 import HeroCarousel from '../components/homePage/HeroCarousel';
-import TopicsTabLayout from '../layouts/homePage/TopicsTabLayout';
+import PopularArticlesSection from '../layouts/homePage/PopularArticlesSection';
 import MostLikedArticlesCard from '../components/homePage/MostLikedArticlesCard';
 import { useEffect } from 'react';
 
@@ -18,9 +18,9 @@ function HomePage() {
           {/* Left section - Topics and Articles (spans 2 columns) */}
           <div className="lg:col-span-2">
             <div className="text-2xl font-bold text-neutral-600 pb-4">
-              Popular Topics
+              Popular Articles
             </div>
-            <TopicsTabLayout />
+            <PopularArticlesSection />
           </div>
 
           {/* Right section - Most Liked Articles */}

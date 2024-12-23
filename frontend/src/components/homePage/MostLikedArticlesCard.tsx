@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArticleItem } from '../../interfaces/articlelItem';
 import { axiosInstance } from '../../config/axios';
 import { formatDate } from '../../utils/dateUtils';
+import { articleTitleJoinWithHyphen } from '../../utils/stringUtils';
 
 function MostLikedArticlesCard() {
   const [topArticles, setTopArticles] = useState<ArticleItem[]>([]);
@@ -24,7 +25,7 @@ function MostLikedArticlesCard() {
         {topArticles.map((article, index) => (
           <Link
             key={article._id}
-            to={`/article/${article._id}`}
+            to={`/article/${articleTitleJoinWithHyphen(article.title)}-${article._id}`}
             className="block hover:bg-primary-500 rounded-lg p-4 transition duration-150"
           >
             <div className="flex items-start">
