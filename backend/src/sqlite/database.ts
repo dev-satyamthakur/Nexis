@@ -92,7 +92,7 @@ class Database {
       }
 
       this.db.run(
-        "INSERT INTO articles (title, id) VALUES (?, ?)",
+        "INSERT OR REPLACE INTO articles (title, id) VALUES (?, ?)",
         [title, id],
         function (err) {
           if (err) {

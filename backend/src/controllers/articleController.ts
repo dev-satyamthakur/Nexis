@@ -67,8 +67,10 @@ export const postArticle = async (req: Request, res: Response) => {
       topics: topics,
     });
 
+    console.log("articleResponse : ", (articleResponse._id as any).toString());
+
     if (articleResponse) {
-      await storeArticleMapping(title, articleResponse._id as any);
+      await storeArticleMapping(title, (articleResponse._id as any).toString());
     }
 
     res
@@ -134,8 +136,13 @@ export const getMostLikedArticles = async (req: Request, res: Response) => {
 export const getArticleById = async (req: Request, res: Response) => {
   const { articleId } = req.params;
 
+  console.log("Inside getArticleById", articleId);
+
   const articleProperTitle = articleId.split("-").join(" ");
   const articleProperId = await getIdByTitle(articleProperTitle);
+
+  console.log("articleProperTitle", articleProperTitle);
+  console.log("articleProperId", articleProperId);
 
   try {
     // Find the article by its ID
