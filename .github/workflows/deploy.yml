@@ -1,0 +1,64 @@
+name: Deploy Backend to VM
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      # Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Set up Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Set up SSH access
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/github_actions
+          chmod 600 ~/.ssh/github_actions
+
+          # Add VM to known hosts
+          ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      # Test SSH connection
+      - name: Test SSH Connection
+        run: |
+          ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_HOST }} "echo 'SSH connection successful'"
+
+      # Deploy files to the VM
+      - name: Deploy Backend
+        run: |
+          echo "Creating temporary directory on VM..."
+          ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_HOST }} "mkdir -p /tmp/backend-deploy"
+
+          echo "Copying backend files to VM..."
+          scp -i ~/.ssh/github_actions -o StrictHostKeyChecking=no -r ./* ${{ secrets.VM_USERNAME }}@${{ secrets.VM_HOST }}:/tmp/backend-deploy/
+
+          echo "Deploying backend on VM..."
+          ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_HOST }} "
+            cd ~/api/backend && \
+            cp ecosystem.config.js /tmp/backend-deploy/ 2>/dev/null || true && \
+            cp .env /tmp/backend-deploy/ 2>/dev/null || true && \
+            rm -rf \$(ls -A | grep -v 'node_modules') && \
+            cp -r /tmp/backend-deploy/* . && \
+            yarn install && \
+            yarn run build && \
+            pm2 restart ecosystem.config.js && \
+            rm -rf /tmp/backend-deploy
+          "
