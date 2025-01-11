@@ -6,7 +6,10 @@ import ShareArticle from '../components/articleDetail/ShareArticle';
 import ArticleNavigation from '../components/articleDetail/ArticleNavigation';
 import { axiosInstance } from '../config/axios';
 import { formatDate } from '../utils/dateUtils'; // Import the utility function
-import { getCapitalizedString } from '../utils/stringUtils';
+import {
+  articleTitleJoinWithHyphen,
+  getCapitalizedString,
+} from '../utils/stringUtils';
 import { DotLoader } from 'react-spinners';
 import DOMPurify from 'dompurify';
 
@@ -193,7 +196,10 @@ const ArticleDetail: React.FC = () => {
         </h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
           {relatedArticles?.relatedArticles.map((item, index) => (
-            <Link to={`/article/${item._id}`} key={index}>
+            <Link
+              to={`/article/${articleTitleJoinWithHyphen(item.title)}`}
+              key={index}
+            >
               <RelatedArticlesCard
                 topic={getCapitalizedString(item.topics[0])}
                 title={item.title}
