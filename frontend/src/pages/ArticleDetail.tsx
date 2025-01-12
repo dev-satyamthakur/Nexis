@@ -12,6 +12,7 @@ import {
 } from '../utils/stringUtils';
 import { DotLoader } from 'react-spinners';
 import DOMPurify from 'dompurify';
+import nexisLogo from '../assets/nexis_icon.png';
 
 // Define the body structure of the article
 interface IArticleBody {
@@ -83,6 +84,7 @@ const ArticleDetail: React.FC = () => {
   const [relatedArticles, setRelatedArticles] =
     useState<IRelatedArticles | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [articleDoesNotExist, setArticleDoesNotExist] = useState(false);
 
   const setSectionsListFromArticleResponse = (data: IArticle) => {
     const bodyWithSections = data.body;
@@ -117,7 +119,10 @@ const ArticleDetail: React.FC = () => {
 
         // page title
         document.title = `${data.title} | NEXIS`;
-      } catch (error) {
+      } catch (error: any) {
+        if (error.response.status === 404) {
+          setArticleDoesNotExist(true);
+        }
         console.error('Error fetching article:', error);
       } finally {
         setIsLoading(false);
@@ -126,6 +131,19 @@ const ArticleDetail: React.FC = () => {
 
     fetchArticle();
   }, [id]);
+
+  if (articleDoesNotExist) {
+    return (
+      <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-48 mt-4">
+        <div className="flex flex-col justify-center items-center h-screen">
+          <img src={nexisLogo} alt="Nexis Logo" className="mb-4 w-16" />
+          <h1 className="text-2xl font-bold text-gray-800">
+            Article does not exist
+          </h1>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -182,7 +200,7 @@ const ArticleDetail: React.FC = () => {
               postUrl={`${import.meta.env.VITE_PROD}/article/${article.data._id}`}
             />
           )}
-          <div className="hidden lg:block lg:mt-8">
+          <div className="hidden lg:block lg:mt-8 lg:ml-2">
             <ArticleNavigation sections={sectionsList} />
           </div>
         </div>
