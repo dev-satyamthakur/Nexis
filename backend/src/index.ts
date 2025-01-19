@@ -14,6 +14,8 @@ import {
   getIdByTitle,
   storeArticleMapping,
 } from "./services/articleTitleIdMappingDb";
+import { testConnversionFromHTMLString } from "./utils/testing";
+import Article from "./models/Article";
 
 dotenv.config();
 const app = express();
@@ -48,9 +50,31 @@ app.get("/api/protected", protect, (req: Request, res: Response) => {
   });
 });
 // Routes
-app.use("/test", async (req, res) => {
+app.get("/test", async (req, res) => {
   res.json({ message: "It works" });
 });
+
+app.post("/test-conversion", async (req, res) => {
+  console.log("Test conversion hit", req.body);
+  const html_string = req.body.html_string;
+  const imageUrl = req.body.imageUrl;
+  const articleTitle = req.body.articleTitle;
+  const resp = await testConnversionFromHTMLString(
+    html_string,
+    imageUrl,
+    articleTitle
+  );
+  const articleData = new Article(resp);
+  const savedArticle = await articleData.save();
+
+  await storeArticleMapping(
+    savedArticle.title,
+    (savedArticle._id as any).toString()
+  );
+
+  res.status(200).json({ message: "Conversion works", id: savedArticle._id });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/articles", articleRoutes);
 app.use("/api/favorite", favoriteRoutes);

@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from "mongoose";
 import sanitizeHtml from "sanitize-html";
 
 // Section interface
-type IArticleSection = {
+export type IArticleSection = {
   id: string;
   heading: string;
   body: string; // This will now contain HTML with images, headings, etc.
